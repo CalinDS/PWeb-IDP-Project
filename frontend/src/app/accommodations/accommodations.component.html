@@ -1,0 +1,15 @@
+<button routerLink="/create-accommodation" routerLinkActive="active" class="add-button" mat-flat-button color="accent"
+    *ngIf="user.type != 'refugee'">
+    List new accommodation
+</button>
+
+<div class="container">
+    <app-accommodation class="item" *ngFor="let acc of accommodations"
+        image={{acc.photo}}
+        address={{acc.address}}
+        free_beds_no={{acc.free_beds_no}}
+        beds_no={{acc.beds_no}}
+        (click)="openPopup(acc)"
+    >
+    </app-accommodation>
+</div>

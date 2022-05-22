@@ -1,0 +1,9 @@
+<div class="container">
+    <app-booking class="item" *ngFor="let b of bookings"
+        image={{b.accommodation.photo}}
+        address={{b.accommodation.address}}
+        beds_no={{b.accommodation.beds_no}}
+        [refugees]="b.refugees"
+    >
+    </app-booking>
+</div>

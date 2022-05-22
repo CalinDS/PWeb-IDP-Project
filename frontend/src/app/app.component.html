@@ -1,0 +1,65 @@
+<mat-toolbar>
+  <button mat-icon-button (click)="drawer.toggle()">
+   <mat-icon>menu</mat-icon>
+ </button>
+ <span>refbnb</span>
+ <span class="spacer"></span>
+ <!-- <button mat-icon-button>
+   <mat-icon>notifications</mat-icon>
+ </button> -->
+ <button mat-icon-button routerLink="/profile" routerLinkActive="active">
+  <mat-icon>person</mat-icon>
+</button>
+<app-auth-button>
+</app-auth-button>
+</mat-toolbar>
+
+<mat-drawer-container class="sidenav-container" autosize>
+  <mat-drawer #drawer class="sidenav" mode="side">
+
+    <mat-list-item *ngIf="user.name">
+      <button mat-button routerLink="/profile" routerLinkActive="active">
+        <mat-icon>person</mat-icon>
+        Profile
+      </button>
+    </mat-list-item>
+
+    <mat-list-item *ngIf="user.type == 'admin'">
+      <button mat-button routerLink="/admin" routerLinkActive="active">
+        <mat-icon>settings</mat-icon>
+        Administration
+      </button>
+    </mat-list-item>
+
+    <mat-list-item *ngIf="user.name">
+      <button mat-button routerLink="/accommodations" routerLinkActive="active">
+        <mat-icon>home</mat-icon>
+        Accommodations
+      </button>
+    </mat-list-item>
+
+    <mat-list-item *ngIf="user.type != 'refugee'">
+      <button mat-button routerLink="/bookings" routerLinkActive="active">
+        <mat-icon>calendar_today</mat-icon>
+        Bookings
+      </button>
+    </mat-list-item>
+
+    <!-- <mat-list-item>
+      <button mat-button routerLink="/accommodations" routerLinkActive="active">
+        <mat-icon>exit_to_app</mat-icon>
+        Log out
+      </button>
+    </mat-list-item> -->
+
+    <mat-list-item>
+      <app-auth-button></app-auth-button>
+    </mat-list-item>
+
+  </mat-drawer>
+
+  <div class="sidenav-content">
+    <router-outlet></router-outlet>
+  </div>
+
+</mat-drawer-container>

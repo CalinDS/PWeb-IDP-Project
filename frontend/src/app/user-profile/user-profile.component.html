@@ -1,0 +1,24 @@
+<mat-card class="example-card">
+    <mat-card-subtitle><span style="text-transform: capitalize;">{{user.type}}</span> profile</mat-card-subtitle>
+    <mat-card-title>{{user.name}}</mat-card-title>
+    <mat-card-content>
+        <p>{{user.email}}</p>
+        <p>{{user.contact_info}}</p>
+    </mat-card-content>
+    <mat-divider inset></mat-divider>
+    <mat-card-content>
+        <br>
+        <p *ngIf="user.type == 'refugee' && !hasAccommodation">You don't have an assigned accommodation yet.</p>
+        <div *ngIf="hasAccommodation">
+            <p>You are assigned to this accommodation.
+            <button mat-stroked-button color="warn" class="book-button" (click)="cancelBooking()">
+                Cancel your booking
+            </button></p>
+            <br>
+            <img src={{user.accommodation.photo}} />
+            <p>{{user.accommodation.address}}</p>
+            <p><b>Contact info: </b>{{user.accommodation.owner_name}} - {{user.accommodation.contact_info}}</p>
+
+        </div>
+    </mat-card-content>
+</mat-card>

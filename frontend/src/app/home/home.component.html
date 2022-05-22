@@ -1,0 +1,12 @@
+<div class="container" *ngIf="isDataLoaded">
+    <h1>I am a</h1>
+    <br><br><br>
+    <div class="button-row" *ngIf="loggedInAuth">
+        <button routerLink="/create-refugee" routerLinkActive="active" class="role-button" mat-flat-button color="accent">Refugee</button>
+        <button routerLink="/create-volunteer" routerLinkActive="active" class="role-button" mat-flat-button color="primary">Volunteer</button>
+    </div>
+    <div class="button-row" *ngIf="!loggedInAuth">
+        <button (click)="auth.loginWithRedirect()" class="role-button" mat-flat-button color="accent">Refugee</button>
+        <button (click)="auth.loginWithRedirect()" class="role-button" mat-flat-button color="primary">Volunteer</button>
+    </div>
+</div>

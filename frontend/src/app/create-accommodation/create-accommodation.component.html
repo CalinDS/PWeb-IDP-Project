@@ -1,0 +1,32 @@
+<div class="container">
+    <br>
+    <h2>List your accommodation</h2>
+    <br>
+    <form class="user-form">
+        <mat-form-field class="user-input" appearance="fill">
+            <mat-label>Address of your accommodation</mat-label>
+            <input matInput [(ngModel)]="address" type="text" name="address">
+        </mat-form-field>
+
+        <mat-form-field class="user-input" appearance="fill">
+            <mat-label>Number of available beds</mat-label>
+            <input matInput [(ngModel)]="beds_no" type="text" name="beds_no">
+        </mat-form-field>
+
+        <!-- <div class="image-upload" class="user-input"> -->
+        <p>Upload an image <i>(optional)</i></p>
+        <img [src]="imageSrc" style="max-width:300px;max-height:300px"/>
+        <input #imageUrl name="imageUrl" id="imageUrl" type="file" accept="image/*" (change)="handleInputChange($event)"/>
+        <!-- </div>  -->
+        <button (click)="imageUrl.click()" mat-icon-button>
+            <mat-icon>attach_file</mat-icon> Choose file
+        </button>
+        <br>
+
+        <button mat-stroked-button (click)="addAccommodation()">
+            Add accommodation
+        </button>
+
+    </form>
+
+</div>

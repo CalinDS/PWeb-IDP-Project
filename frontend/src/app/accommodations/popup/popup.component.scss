@@ -1,0 +1,19 @@
+.container {
+    
+    .item {
+        img {
+            width: 55vw;
+            height: 60vh;
+            object-fit: cover;
+        }
+    }
+
+    .book-button {
+        margin: 0;
+        position: relative;
+        left: 40vw;
+        width: 15vw;
+        // height: 4vh;
+        top: -4vh;
+    }
+}

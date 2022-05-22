@@ -1,0 +1,32 @@
+<div class="container">
+    <br>
+    <h2>Create your refugee profile</h2>
+    <br>
+    <form class="user-form">
+        <mat-form-field class="user-input" appearance="fill">
+            <mat-label>Email</mat-label>
+            <input matInput disabled value={{user.email}}>
+        </mat-form-field>
+
+        <mat-form-field class="user-input" appearance="fill">
+            <mat-label>Name</mat-label>
+            <input matInput [(ngModel)]="name" type="text" name="name">
+        </mat-form-field>
+
+        <mat-form-field class="user-input" appearance="fill">
+            <mat-label>Number of family members</mat-label>
+            <input matInput [(ngModel)]="familyMembersNo" type="text" name="familyMembersNo">
+        </mat-form-field>
+
+        <mat-form-field class="user-input" appearance="fill">
+            <mat-label>Contact Information</mat-label>
+            <input matInput [(ngModel)]="contactInfo" type="text" name="contactInfo">
+        </mat-form-field>
+
+        <button mat-stroked-button (click)="saveProfile()">
+            Save profile
+        </button>
+
+    </form>
+
+</div>

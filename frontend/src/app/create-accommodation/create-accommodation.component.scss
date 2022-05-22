@@ -1,0 +1,29 @@
+.container {
+
+    text-align: center;
+
+    .user-form {
+        display: flex;
+        flex-direction: column;
+        padding-left: 30%;
+        padding-right: 30%;
+    
+        img {
+            width: 100%;
+        }
+
+        p {
+            text-align: left;
+        }
+        .user-input {
+
+
+        }
+
+    }
+    
+}
+
+#imageUrl {
+    visibility: hidden;
+}
