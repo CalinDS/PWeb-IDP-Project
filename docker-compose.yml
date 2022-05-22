@@ -1,0 +1,38 @@
+# docker-compose.yml
+version: "3.8"
+services:
+  backend:
+    image: cds22/back:final
+    ports:
+      - "5000:5000"
+    networks:
+      - project-network
+      - alert-network
+    volumes:
+      - project-volume:/usr/src/app
+
+
+  frontend:
+    image: cds22/front:final
+    ports:
+      - "4200:4200"
+    networks:
+      - project-network
+
+      
+  alert:
+    image: cds22/alert:final
+    ports:
+      - "6000:6000"
+    networks:
+      - alert-network
+
+
+volumes:
+  project-volume:
+
+networks:
+  project-network:
+  alert-network:
+
+
