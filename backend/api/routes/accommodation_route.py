@@ -3,29 +3,31 @@ import json
 from flask import request, Blueprint, jsonify
 from core.model.booking_model import BookingModel
 from infrastrucure.db_config import db
+# from infrastrucure.metric_config import g
 from core.model.accommodation_model import AccommodationModel
 from core.model.user_model import UserModel
+
 
 accommodations_api = Blueprint('accommodations_api', __name__)
 
 
 #create
-@accommodations_api.route('/accommodations/create', methods = ['POST'])
-def create_accommodation():
-    data = request.get_json()
-    try:
-        accommodation = AccommodationModel(
-            owner_id=data["owner_id"],
-            photo=data["photo"],
-            beds_no=data["beds_no"],
-            address=data["address"]
-            )
-        db.session.add(accommodation)
-        db.session.commit()
-        return "Accommodation added", 200
-    except Exception as e:
-        print(e)
-        return "Error", 404
+# @accommodations_api.route('/accommodations/create', methods = ['POST'])
+# def create_accommodation():
+#     data = request.get_json()
+#     try:
+#         accommodation = AccommodationModel(
+#             owner_id=data["owner_id"],
+#             photo=data["photo"],
+#             beds_no=data["beds_no"],
+#             address=data["address"]
+#             )
+#         db.session.add(accommodation)
+#         db.session.commit()
+#         return "Accommodation added", 200
+#     except Exception as e:
+#         print(e)
+#         return "Error", 404
 
 
 #retrieve
@@ -76,14 +78,14 @@ def update_accommodation(id):
 
 
 #delete
-@accommodations_api.route('/accommodations/<int:id>/delete', methods=['GET','POST', 'PUT', 'DELETE'])
-def delete_accommodation(id):
-    accommodation = AccommodationModel.query.filter_by(id=id).first()
-    if accommodation:
-        bookings = BookingModel.query.filter_by(accommodation_id=accommodation.id).all()
-        for b in bookings:
-            db.session.delete(b)
-        db.session.delete(accommodation)
-        db.session.commit()
-        return "Deleted", 200
-    return f"User with id={id} doesn't exist", 404
+# @accommodations_api.route('/accommodations/<int:id>/delete', methods=['GET','POST', 'PUT', 'DELETE'])
+# def delete_accommodation(id):
+#     accommodation = AccommodationModel.query.filter_by(id=id).first()
+#     if accommodation:
+#         bookings = BookingModel.query.filter_by(accommodation_id=accommodation.id).all()
+#         for b in bookings:
+#             db.session.delete(b)
+#         db.session.delete(accommodation)
+#         db.session.commit()
+#         return "Deleted", 200
+#     return f"User with id={id} doesn't exist", 404

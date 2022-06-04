@@ -1,38 +1,185 @@
 # docker-compose.yml
 version: "3.8"
 services:
-  backend:
-    image: cds22/back:final
-    ports:
-      - "5000:5000"
-    networks:
-      - project-network
-      - alert-network
-    volumes:
-      - project-volume:/usr/src/app
+
+    prometheus:
+        image: prom/prometheus
+        volumes:
+            - ./configs/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+        ports:
+            - 9090:9090
+        networks:
+            - monitoring
+            - visualizing
+        deploy:
+            placement:
+                constraints: [node.role == manager]
+
+    node_exporter:
+        image: prom/node-exporter
+        deploy:
+            mode: global
+            placement:
+                constraints: [node.role == manager]
+        volumes:
+            - /proc:/host/proc:ro
+            - /sys:/host/sys:ro
+            - /:/rootfs:ro
+        command:
+            - '--path.procfs=/host/proc'
+            - '--path.rootfs=/rootfs'
+            - '--path.sysfs=/host/sys'
+            - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+        ports:
+            - 9100:9100
+        networks:
+            - monitoring
+            
+
+    cadvisor:
+        image: gcr.io/cadvisor/cadvisor
+        deploy:
+            mode: global
+        volumes:
+            - /:/rootfs:ro
+            - /var/run:/var/run:ro
+            - /sys:/sys:ro
+            - /var/lib/docker/:/var/lib/docker:ro
+            - /dev/disk:/dev/disk/:ro
+        ports:
+            - 8080:8080
+        networks:
+            - monitoring
 
 
-  frontend:
-    image: cds22/front:final
-    ports:
-      - "4200:4200"
-    networks:
-      - project-network
+    loki:
+        image: grafana/loki
+        volumes:
+            - ./configs/loki/loki.yml:/etc/config/loki.yml
+            - ./configs/loki/wal:/wal
+        entrypoint:
+            - /usr/bin/loki
+            - -config.file=/etc/config/loki.yml
+        ports:
+            - 3100:3100
+        networks:
+            - logging
+            - visualizing
+        deploy:
+            placement:
+                constraints: [node.role == manager]
 
-      
-  alert:
-    image: cds22/alert:final
-    ports:
-      - "6000:6000"
-    networks:
-      - alert-network
+    grafana:
+        image: grafana/grafana
+        volumes:
+            - grafana-volume:/var/lib/grafana
+        ports:
+            - 3000:3000
+        depends_on:
+            - loki
+        deploy:
+            placement:
+                constraints: [node.role == manager]
+        networks:
+            - visualizing
+            
+    rabbitmq:
+        image: rabbitmq:management-alpine
+        ports:
+            - 5672:5672
+            - 15672:15672
+        networks:
+            - rmq
+        hostname: rabbitmq
+        deploy:
+            placement:
+                constraints: [node.role == manager]
+
+    
+    kong:
+        image: kong:latest
+        volumes:
+            - ./configs/kong:/usr/local/kong/declarative 
+        environment:
+            KONG_DATABASE: 'off' 
+            KONG_DECLARATIVE_CONFIG: /usr/local/kong/declarative/kong.yml
+            KONG_PROXY_ACCESS_LOG: /dev/stdout
+            KONG_ADMIN_ACCESS_LOG: /dev/stdout
+            KONG_PROXY_ERROR_LOG: /dev/stderr
+            KONG_ADMIN_ERROR_LOG: /dev/stderr
+            KONG_ADMIN_LISTEN: 0.0.0.0:8001, 0.0.0.0:8444 ssl
+        ports:
+            - 80:8000
+            - 443:8443
+            - 8001:8001
+            - 8444:8444
+        deploy:
+            placement:
+                constraints: [node.role == manager]
+        networks:
+            - gateway
+
+
+    backend:
+        image: cds22/back:final
+        logging:
+            driver: loki
+            options:
+                loki-url: http://host.docker.internal:3100/loki/api/v1/push
+                loki-external-labels: job=myjob,owner=dragos,environment=development
+        ports:
+            - "5000:5000"
+            - "8005:8005"
+        depends_on:
+            - rabbitmq
+        networks:
+            - project-network
+            - monitoring
+            - rmq
+            - gateway
+            - logging
+            # - visualizing
+        volumes:
+            - project-volume:/usr/src/app
+        deploy:
+            placement:
+                constraints: [node.role == manager]
+
+    frontend:
+        image: cds22/front:final
+        ports:
+            - "4200:4200"
+        networks:
+            - project-network
+            - gateway
+        deploy:
+            placement:
+                constraints: [node.role == manager]
+
+    alert:
+        image: cds22/alert:final
+        depends_on:
+            - rabbitmq
+        networks:
+            - project-network
+            - rmq
+            - gateway
+        deploy:
+            placement:
+                constraints: [node.role == manager]
 
 
 volumes:
-  project-volume:
+    project-volume:
+    grafana-volume:
+
 
 networks:
-  project-network:
-  alert-network:
+    project-network:
+    monitoring:
+    rmq:
+    gateway:
+    logging:
+    visualizing:
 
 

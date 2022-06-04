@@ -7,7 +7,6 @@ RUN pip install --no-cache-dir -r /usr/src/app/requirements.txt
 
 COPY . .
 
+RUN chmod +x startup.sh
 
-EXPOSE 6000
- 
-CMD ["python3", "./app.py"]
+CMD ["sh", "./startup.sh"]

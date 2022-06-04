@@ -9,14 +9,16 @@ import requests as req
 import time
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+import pika
+import logging
 
 bookings_api = Blueprint('bookings_api', __name__)
 
 
 @bookings_api.route('/bookings/create', methods = ['POST'])
 def create_booking():
+    print("whatever", flush=True)
     data = request.get_json()
-    print(data)
     refugee = UserModel.query.filter_by(id=data["refugee_id"]).first()
     members_no = refugee.family_members_no
     refugee_name = refugee.name
@@ -37,20 +39,31 @@ def create_booking():
             "refugee_name": refugee_name,
             "members_no": members_no
         }
-        print(content)
 
-        # session = req.Session()
-        # retry = Retry(connect=3, backoff_factor=1)
-        # adapter = HTTPAdapter(max_retries=retry)
-        # session.mount('http://', adapter)
-        # session.mount('https://', adapter)
-        # page = ''
-        # try:
-        #     page = session.post("http://alert:6000/alerts", json=content, timeout=10)
-        # except Exception as e1:
-        #     print(e1)
+        session = req.Session()
+        retry = Retry(connect=3, backoff_factor=1)
+        adapter = HTTPAdapter(max_retries=retry)
+        session.mount('http://', adapter)
+        session.mount('https://', adapter)
 
-        resp = req.post("http://127.0.0.1:6000/alerts", json=content)
+        try:
+            print('message trying to be sent', flush=True)
+            # page = session.post("http://alert:6000/alerts", json=content, timeout=10)
+            connection = pika.BlockingConnection(
+            pika.ConnectionParameters(host='rabbitmq'))
+            channel = connection.channel()
+            channel.queue_declare(queue='msg_queue', durable=True)
+            channel.basic_publish(
+                exchange='',
+                routing_key='msg_queue',
+                body=str(content),
+                properties=pika.BasicProperties(
+                    delivery_mode=2,
+                ))
+            print('message sent', flush=True)
+            connection.close()
+        except Exception as e1:
+            print('error is' + e1, flush=True)
 
         return "Booking added", 200
     except Exception as e:

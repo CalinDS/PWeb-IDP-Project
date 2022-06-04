@@ -2,6 +2,7 @@ from distutils.log import error
 import json
 from flask import request, Blueprint, jsonify
 from infrastrucure.db_config import db
+# from infrastrucure.metric_config import c
 from core.model.user_model import UserModel
 from core.model.booking_model import BookingModel
 from core.model.accommodation_model import AccommodationModel
@@ -35,39 +36,41 @@ def create_user():
 
 
 #retrieve
-@users_api.route('/users', methods = ['GET'])
-def retrieve_users():
-    users = UserModel.query.all()
-    return str(users), 200
+# @users_api.route('/users', methods = ['GET'])
+# def retrieve_users():
+#     c.inc()
+#     users = UserModel.query.all()
+#     return str(users), 200
 
 
-@users_api.route('/users/<string:auth_id>', methods = ['GET'])
-def retrieve_user_by_auth_id(auth_id):
-    user = UserModel.query.filter_by(auth_id=auth_id).first()
-    if user:
-        resp = {
-            "id": user.id,
-            "auth_id": user.auth_id,
-            "email": user.email,
-            "name": user.name,
-            "type": user.type,
-            "contact_info": user.contact_info,
-            "family_members_no": user.family_members_no
-        }
-        if user.type == 'refugee':
-            booking = BookingModel.query.filter_by(refugee_id=user.id).first()
-            if booking:
-                accommodation = AccommodationModel.query.filter_by(id=booking.accommodation_id).first()
-                owner = UserModel.query.filter_by(id=accommodation.owner_id).first()
-                resp["accommodation"]= {
-                    "address": accommodation.address,
-                    "photo": accommodation.photo,
-                    "owner_name": owner.name,
-                    "contact_info": owner.contact_info,
-                    "booking_id": booking.id
-                }
-        return jsonify(resp), 200
-    return f"User with auth_id={auth_id} doesn't exist", 404
+# @users_api.route('/users/<string:auth_id>', methods = ['GET'])
+# def retrieve_user_by_auth_id(auth_id):
+#     c.inc()
+#     user = UserModel.query.filter_by(auth_id=auth_id).first()
+#     if user:
+#         resp = {
+#             "id": user.id,
+#             "auth_id": user.auth_id,
+#             "email": user.email,
+#             "name": user.name,
+#             "type": user.type,
+#             "contact_info": user.contact_info,
+#             "family_members_no": user.family_members_no
+#         }
+#         if user.type == 'refugee':
+#             booking = BookingModel.query.filter_by(refugee_id=user.id).first()
+#             if booking:
+#                 accommodation = AccommodationModel.query.filter_by(id=booking.accommodation_id).first()
+#                 owner = UserModel.query.filter_by(id=accommodation.owner_id).first()
+#                 resp["accommodation"]= {
+#                     "address": accommodation.address,
+#                     "photo": accommodation.photo,
+#                     "owner_name": owner.name,
+#                     "contact_info": owner.contact_info,
+#                     "booking_id": booking.id
+#                 }
+#         return jsonify(resp), 200
+#     return f"User with auth_id={auth_id} doesn't exist", 404
 
 
 #update
